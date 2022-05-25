@@ -1,0 +1,18 @@
+{% extends 'base.html' %} {% block title %}Home{% endblock %} {% block content
+%}
+<h1>Question {{quest_id + 1}}</h1>
+<p>{{curr_question}}</p>
+<form action="/answer" method="post">
+  {% for choice in answer_choices %}
+  <input
+    type="radio"
+    id="question-{{quest_id}}-{{answer_choices.index(choice)}}"
+    name="{{choice}}-{{quest_id}}"
+  />
+  <label for="question-{{quest_id}}-{{answer_choices.index(choice)}}"
+    >{{choice}}</label
+  ><br />
+  {% endfor %}
+  <button>Next</button>
+</form>
+{% endblock %}
