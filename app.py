@@ -28,10 +28,11 @@ def question_page(question_id):
     quest_id = len(responses)
     if len(responses) == len(question_list):
         return redirect('/thank_you')
-    else:
-        curr_question = question_list[quest_id].question
-        answer_choices = question_list[quest_id].choices
-        return render_template('question.html', curr_question = curr_question, quest_id = quest_id, answer_choices = answer_choices)
+    if quest_id != int(question_id):
+        flash("You are trying to access an invalid question.", 'error')
+    curr_question = question_list[quest_id].question
+    answer_choices = question_list[quest_id].choices
+    return render_template('question.html', curr_question = curr_question, quest_id = quest_id, answer_choices = answer_choices)
 
 
 @app.route('/answer', methods=["POST"])
