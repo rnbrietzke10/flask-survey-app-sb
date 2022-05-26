@@ -13,6 +13,9 @@ responses = []
 
 @app.route('/')
 def home_page():
+    """
+    Renders Home page with info about Survey
+    """
     title = satisfaction_survey.title
     instruction = satisfaction_survey.instructions
     quest_id = len(responses)
@@ -24,6 +27,9 @@ def home_page():
 
 @app.route('/questions/<question_id>')
 def question_page(question_id):
+    """
+    Renders current question the user is on and redirects them to the correct question if they try to go to the wrong question
+    """
     question_list = satisfaction_survey.questions
     quest_id = len(responses)
     if len(responses) == len(question_list):
@@ -37,6 +43,11 @@ def question_page(question_id):
 
 @app.route('/answer', methods=["POST"])
 def answer_route():
+    """
+    Add answer to responses list and redirect to next question
+    If all questions have been answered they are redirected to the  '/thank_you' page
+    If they do not select an answer then a flash will tell them to select an answer.
+    """
     if len(responses) == len(list(satisfaction_survey.questions)):
         return redirect('/thank_you')
     if(bool(list(request.form))):
@@ -54,4 +65,5 @@ def answer_route():
 
 @app.route('/thank_you')
 def thank_you_page():
+    """Renders Thank you page"""
     return render_template('thank_you.html')
