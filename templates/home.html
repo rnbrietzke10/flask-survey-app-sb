@@ -1,7 +1,7 @@
 {%extends 'base.html'%} {% block title %}Home{% endblock %} {% block content %}
 <h1>{{title}}</h1>
 <p>{{instruction}}</p>
-<form action="/questions/{{quest_id}}">
+<form action="/reset_responses" method="post">
   <button class="btn">Begin Survey</button>
 </form>
 {% endblock %}

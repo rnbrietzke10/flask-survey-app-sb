@@ -1,15 +1,16 @@
-import re
-from flask import Flask, render_template, request, redirect, flash
+import os
+from flask import Flask, render_template, request, redirect, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 
 from surveys import *
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'astros_are_awesome'
+app.config['SECRET_KEY'] = os.urandom(24)
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
 responses = []
+
 
 @app.route('/')
 def home_page():
@@ -20,10 +21,16 @@ def home_page():
     instruction = satisfaction_survey.instructions
     quest_id = len(responses)
 
-    if len(satisfaction_survey.questions) == len(responses):
-        return redirect('/thank_you')
-    else:
-        return render_template('home.html', title = title, instruction = instruction,  quest_id = quest_id)
+    return render_template('home.html', title = title, instruction = instruction,  quest_id = quest_id)
+
+@app.route('/reset_responses', methods={'POST'})
+def reset_response_list():
+    session['responses'] = []
+    responses = session['responses']
+
+    return redirect(f'/questions/{len(responses)}')
+
+
 
 @app.route('/questions/<question_id>')
 def question_page(question_id):
@@ -48,6 +55,7 @@ def answer_route():
     If all questions have been answered they are redirected to the  '/thank_you' page
     If they do not select an answer then a flash will tell them to select an answer.
     """
+
     if len(responses) == len(list(satisfaction_survey.questions)):
         return redirect('/thank_you')
     if(bool(list(request.form))):
@@ -55,10 +63,11 @@ def answer_route():
         quest_id = int(list_split_key[1])
     elif not bool(list(request.form)) or len(responses) != quest_id:
         flash("Please select an answer.", 'error')
-        return redirect(f'/questions/{len(responses)}')
+        return redirect(f'/questions/{responses}')
 
     list_split_key = list(request.form.keys())[0].split('-')
     responses.append(list_split_key[0])
+    session['responses'] = responses
     quest_id = len(responses)
     return redirect(f'/questions/{quest_id}')
 
